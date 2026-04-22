@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-9508000775127889">
-    
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9508000775127889" crossorigin="anonymous"></script>
-
     <meta charset="UTF-8">
     <title>OCR 智能命名工具</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
@@ -13,35 +9,48 @@
         :root { --primary: #2563eb; --success: #059669; --danger: #ef4444; --bg: #f1f5f9; --warning: #f59e0b; --suffix: #8b5cf6; }
         body { font-family: system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
         .container { display: grid; grid-template-columns: 380px 1fr; gap: 20px; width: 100%; max-width: 1600px; }
+        
+        /* 左側欄位 */
         .sidebar { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 95vh; }
         .section-box { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .section-title { margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #475569; }
+        
+        /* 標籤提示 */
         .tag-row { font-size: 11px; color: #64748b; margin-top: 6px; display: flex; gap: 8px; }
         .tag-row b { color: var(--suffix); background: #f3f0ff; padding: 1px 4px; border-radius: 3px; }
+        
+        /* 清單樣式 */
         .list-container { border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; max-height: 250px; overflow-y: auto; }
         .item { padding: 10px; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; justify-content: space-between; align-items: flex-start; font-size: 12px; }
         .item:hover { background: #f8fafc; }
         .item.active { background: #eff6ff; border-left: 4px solid var(--primary); font-weight: bold; }
+        
+        /* 範本詳情 */
         .tpl-detail { font-size: 10px; color: #94a3b8; display: block; margin-top: 2px; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+        
         .file-info { display: flex; flex-direction: column; gap: 3px; overflow: hidden; flex: 1; }
         .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 220px; }
         .ocr-hint { font-size: 11px; color: var(--success); font-family: monospace; font-weight: normal; }
         .ocr-hint.error { color: var(--danger); }
         .edit-btn { font-size: 10px; padding: 2px 5px; margin-top: 3px; border: 1px solid #cbd5e1; border-radius: 4px; background: white; width: fit-content; cursor: pointer; }
+        
+        /* 上傳區 */
         #drop-zone { border: 2px dashed #cbd5e1; padding: 20px; text-align: center; cursor: pointer; color: #64748b; font-size: 13px; border-radius: 8px; }
         #drop-zone:hover { border-color: var(--primary); background: #f0f7ff; }
+
+        /* 右側主區域 */
         .main-content { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .canvas-wrapper { position: relative; border: 1px solid #cbd5e1; background: #525659; overflow: auto; height: 700px; flex: 1; }
         #selector { position: absolute; border: 2px solid var(--danger); background: rgba(239, 68, 68, 0.15); pointer-events: none; z-index: 10; }
+        
+        /* 按鈕 */
         .btn { padding: 6px 12px; border-radius: 6px; cursor: pointer; border: 1px solid #cbd5e1; background: white; font-size: 12px; }
         .btn-primary { background: var(--primary); color: white; border: none; }
         .btn-success { background: var(--success); color: white; border: none; width: 100%; padding: 12px; font-weight: bold; margin-top: 10px; font-size: 14px; }
         .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; width: 100%; padding: 8px; margin-top: 5px; }
+        
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .spin { display: inline-block; animation: spin 1s linear infinite; }
-        
-        /* 廣告位樣式 */
-        .ad-container { margin-top: 15px; min-height: 100px; background: #f8fafc; border: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -51,8 +60,8 @@
         <h3>📄 OCR 智能命名工具</h3>
         
         <div class="section-box" style="border-left: 4px solid var(--warning);">
-            <h4 class="section-title">🔍 過濾規則 (Regex) - RO#:[A-Z]{3}\d{4}R\d{4} </h4>
-            <input type="text" id="regex-pattern" placeholder="例如: [A-Z]{3}\d{4}R\d{4}" style="width:100%; box-sizing:border-box; padding:5px;">
+            <h4 class="section-title">🔍 過濾規則 (Regex)</h4>
+            <input type="text" id="regex-pattern" placeholder="例如: [A-Z]{2}\d{8}" style="width:100%; box-sizing:border-box; padding:5px;">
         </div>
 
         <div class="section-box" style="border-left: 4px solid var(--suffix);">
@@ -80,18 +89,6 @@
         
         <button id="run-batch" class="btn btn-success" disabled>🚀 開始批量改名下載</button>
         <button class="btn btn-danger" onclick="clearAllFiles()">🧹 清除所有檔案</button>
-
-        <div class="ad-container">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-9508000775127889"
-                 data-ad-slot="YOUR_AD_SLOT_ID"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
     </div>
 
     <div class="main-content">
@@ -118,5 +115,261 @@
         </div>
     </div>
 </div>
+
+<script>
+    const pdfjsLib = window['pdfjs-dist/build/pdf'];
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+    let filesData = [], activeIndex = -1;
+    let templates = JSON.parse(localStorage.getItem('pdf_ocr_v11_tpls')) || [];
+    let previewWorker = null, previewTimer = null;
+
+    const canvas = document.getElementById('pdf-canvas'), ctx = canvas.getContext('2d'), selector = document.getElementById('selector');
+
+    async function getWorker() {
+        if (!previewWorker) {
+            previewWorker = await Tesseract.createWorker();
+            await previewWorker.loadLanguage('eng+chi_tra');
+            await previewWorker.initialize('eng+chi_tra');
+        }
+        return previewWorker;
+    }
+
+    // 檔案選取
+    const dropZone = document.getElementById('drop-zone');
+    dropZone.onclick = () => document.getElementById('file-input').click();
+    document.getElementById('file-input').onchange = (e) => handleFiles(e.target.files);
+    dropZone.ondragover = (e) => { e.preventDefault(); dropZone.style.background = "#f0f7ff"; };
+    dropZone.ondragleave = () => { dropZone.style.background = "none"; };
+    dropZone.ondrop = (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); };
+
+    function handleFiles(files) {
+        const curX = parseInt(document.getElementById('curX').value) || 0,
+              curY = parseInt(document.getElementById('curY').value) || 0,
+              curW = parseInt(document.getElementById('curW').value) || 0,
+              curH = parseInt(document.getElementById('curH').value) || 0,
+              regex = document.getElementById('regex-pattern').value;
+
+        const newFiles = Array.from(files).filter(f => f.type === "application/pdf").map(f => ({
+            file: f, x: curX, y: curY, w: curW, h: curH, rotation: 0, status: 'wait', previewText: '', regex: regex, isManual: false
+        }));
+        filesData = [...filesData, ...newFiles];
+        renderFileList();
+        if (activeIndex === -1 && filesData.length > 0) selectFile(filesData.length - newFiles.length);
+        document.getElementById('run-batch').disabled = false;
+    }
+
+    function renderFileList() {
+        document.getElementById('file-list-ui').innerHTML = filesData.map((d, i) => `
+            <div class="item ${i === activeIndex ? 'active' : ''}" onclick="selectFile(${i})">
+                <div class="file-info">
+                    <span class="file-name">${d.status==='processing'?'<span class="spin">🔄</span> ': (d.status==='done'?'✅ ':'📄 ')}${d.file.name}</span>
+                    <span class="ocr-hint ${d.previewText.includes('⚠️')?'error':''}" id="hint-${i}">
+                        ${d.previewText || '等待辨識...'} ${d.isManual ? '<small style="color:#94a3b8">(手動修訂)</small>' : ''}
+                    </span>
+                    <div class="edit-btn" onclick="event.stopPropagation(); manualEdit(${i})">✏️ 修訂名稱</div>
+                </div>
+                <button style="border:none; background:none; cursor:pointer; color:#ccc" onclick="event.stopPropagation(); removeFile(${i});">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function manualEdit(index) {
+        const d = filesData[index];
+        const newName = prompt(`修訂辨識結果：\n檔名將以此為準 (不含後綴)`, d.previewText.replace("⚠️ 未匹配", ""));
+        if (newName !== null) { d.previewText = newName.trim(); d.isManual = true; renderFileList(); }
+    }
+
+    async function selectFile(index) {
+        if (!filesData[index]) return;
+        activeIndex = index; const d = filesData[index];
+        document.getElementById('curX').value = d.x; document.getElementById('curY').value = d.y;
+        document.getElementById('curW').value = d.w; document.getElementById('curH').value = d.h;
+        document.getElementById('regex-pattern').value = d.regex || "";
+        document.getElementById('target-filename').innerText = d.file.name;
+
+        const pdf = await pdfjsLib.getDocument({data: await d.file.arrayBuffer()}).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({scale: 1.5, rotation: d.rotation});
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        await page.render({canvasContext: ctx, viewport: viewport}).promise;
+        drawSelector();
+        renderFileList();
+        if (!d.isManual) triggerQuickOCR();
+    }
+
+    // --- 核心 OCR 邏輯 (包含渲染修復) ---
+    async function processOCRForFile(index) {
+        const d = filesData[index];
+        if (!d || d.w < 5 || d.h < 5 || d.isManual) return;
+        try {
+            const worker = await getWorker();
+            const pdf = await pdfjsLib.getDocument({data: await d.file.arrayBuffer()}).promise;
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({scale: 1.5, rotation: d.rotation});
+            
+            const tCanvas = document.createElement('canvas');
+            tCanvas.width = viewport.width; tCanvas.height = viewport.height;
+            const tCtx = tCanvas.getContext('2d');
+            // 關鍵：必須等待 PDF 渲染到畫布上
+            await page.render({canvasContext: tCtx, viewport: viewport}).promise;
+
+            const crop = document.createElement('canvas');
+            crop.width = d.w; crop.height = d.h;
+            const cCtx = crop.getContext('2d');
+            cCtx.filter = 'grayscale(1) contrast(140%)';
+            cCtx.drawImage(tCanvas, d.x, d.y, d.w, d.h, 0, 0, d.w, d.h);
+
+            const { data: { text } } = await worker.recognize(crop);
+            let result = text.trim().replace(/[\n\r]/g, ' ');
+            if (d.regex) {
+                try { const m = result.match(new RegExp(d.regex)); result = m ? m[0] : "⚠️ 未匹配"; }
+                catch(e) { result = "❌ Regex 錯誤"; }
+            }
+            d.previewText = result; renderFileList();
+        } catch (e) { console.error("OCR Error:", e); }
+    }
+
+    async function applyToAll() {
+        if (activeIndex === -1) return;
+        const base = filesData[activeIndex];
+        const reg = document.getElementById('regex-pattern').value;
+        const btn = document.getElementById('apply-all-btn');
+        btn.disabled = true; btn.innerText = "⏳ 同步中...";
+        
+        filesData.forEach(f => {
+            if (f.status !== 'done') {
+                Object.assign(f, { x: base.x, y: base.y, w: base.w, h: base.h, rotation: base.rotation, regex: reg });
+                if(!f.isManual) f.previewText = '辨識中...';
+            }
+        });
+        renderFileList();
+        for (let i = 0; i < filesData.length; i++) {
+            if (filesData[i].status !== 'done' && !filesData[i].isManual) await processOCRForFile(i);
+        }
+        btn.disabled = false; btn.innerText = "🌐 套用當前規則至全部檔案";
+    }
+
+    // --- 範本功能 ---
+    function renderTemplates() {
+        document.getElementById('template-list').innerHTML = templates.map((t, i) => `
+            <div class="item" style="padding:8px 10px; border-left: 3px solid #e2e8f0;">
+                <div style="flex:1" onclick="useTemplate(${i})">
+                    <b style="font-size:13px; color:#1e293b;">${t.name}</b>
+                    <span class="tpl-detail">🔍 規則: ${t.regex || '無'}</span>
+                    <span class="tpl-detail">✍️ 後綴: ${t.suffix || '無'}</span>
+                </div>
+                <button style="border:none; background:none; cursor:pointer; color:#ccc" onclick="event.stopPropagation(); templates.splice(${i},1); renderTemplates();">✕</button>
+            </div>
+        `).join('');
+        localStorage.setItem('pdf_ocr_v11_tpls', JSON.stringify(templates));
+    }
+
+    function saveTemplate() {
+        const name = document.getElementById('tpl-name').value.trim();
+        if (!name || activeIndex === -1) { alert("請輸入範本名稱並選取 PDF"); return; }
+        const d = filesData[activeIndex];
+        const newTpl = { 
+            name, x: d.x, y: d.y, w: d.w, h: d.h, rotation: d.rotation, 
+            regex: document.getElementById('regex-pattern').value,
+            suffix: document.getElementById('filename-suffix').value
+        };
+        const idx = templates.findIndex(t => t.name === name);
+        if (idx !== -1) { if(confirm("覆蓋現有範本？")) templates[idx] = newTpl; }
+        else templates.push(newTpl);
+        document.getElementById('tpl-name').value = "";
+        renderTemplates();
+    }
+
+    function useTemplate(i) {
+        const t = templates[i];
+        document.getElementById('regex-pattern').value = t.regex || "";
+        document.getElementById('filename-suffix').value = t.suffix || "";
+        if (activeIndex !== -1) {
+            Object.assign(filesData[activeIndex], { x: t.x, y: t.y, w: t.w, h: t.h, rotation: t.rotation, regex: t.regex });
+            selectFile(activeIndex);
+        }
+        applyToAll();
+    }
+
+    // --- 畫布與輔助工具 ---
+    function triggerQuickOCR() { clearTimeout(previewTimer); previewTimer = setTimeout(() => processOCRForFile(activeIndex), 600); }
+    function updateActivePos() {
+        if (activeIndex === -1) return;
+        const d = filesData[activeIndex];
+        d.x = parseInt(document.getElementById('curX').value) || 0;
+        d.y = parseInt(document.getElementById('curY').value) || 0;
+        d.w = parseInt(document.getElementById('curW').value) || 0;
+        d.h = parseInt(document.getElementById('curH').value) || 0;
+        d.regex = document.getElementById('regex-pattern').value;
+        d.isManual = false; drawSelector(); triggerQuickOCR();
+    }
+    function drawSelector() {
+        const d = filesData[activeIndex];
+        if (d && d.w > 0) Object.assign(selector.style, { display:'block', left:d.x+'px', top:d.y+'px', width:d.w+'px', height:d.h+'px' });
+        else selector.style.display = 'none';
+    }
+    function changeRotation(degree) {
+        if (activeIndex === -1) return;
+        filesData[activeIndex].rotation = (filesData[activeIndex].rotation + degree + 360) % 360;
+        selectFile(activeIndex);
+    }
+    function removeFile(index) {
+        filesData.splice(index, 1);
+        if (filesData.length === 0) { activeIndex = -1; renderFileList(); document.getElementById('run-batch').disabled=true; }
+        else { activeIndex = Math.min(activeIndex, filesData.length-1); selectFile(activeIndex); }
+    }
+    function clearAllFiles() { if(confirm("確定要清空所有檔案嗎？")) { filesData = []; activeIndex = -1; renderFileList(); canvas.width=0; selector.style.display='none'; } }
+
+    function parseTags(str, i) {
+        const now = new Date();
+        const d = now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0');
+        const t = String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
+        return str.replace(/{date}/g, d).replace(/{time}/g, t).replace(/{n}/g, i+1);
+    }
+
+    document.getElementById('run-batch').onclick = async () => {
+        const btn = document.getElementById('run-batch'); btn.disabled = true;
+        const currentSuffix = document.getElementById('filename-suffix').value;
+        for (let i = 0; i < filesData.length; i++) {
+            if (filesData[i].status === 'done') continue;
+            const d = filesData[i]; d.status = 'processing'; renderFileList();
+            try {
+                let name = d.previewText || "Unmatched";
+                // 檔名過濾：去掉錯誤提示字元，保留合法檔名
+                name = name.replace(/[⚠️❌]/g, "").replace(/[\\/:*?"<>|]/g, '_').trim() || "Unmatched";
+                const suffix = parseTags(currentSuffix || '', i);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(d.file);
+                link.download = `${name}${suffix}.pdf`;
+                link.click(); URL.revokeObjectURL(link.href);
+                d.status = 'done';
+            } catch (e) { d.status = 'wait'; }
+            renderFileList();
+        }
+        btn.disabled = false; alert("批量處理完成！");
+    };
+
+    // 畫框交互邏輯
+    let isDrawing = false, sX, sY;
+    canvas.onmousedown = (e) => {
+        if(activeIndex === -1) return; isDrawing = true;
+        const r = canvas.getBoundingClientRect();
+        sX = e.clientX - r.left + canvas.parentElement.scrollLeft;
+        sY = e.clientY - r.top + canvas.parentElement.scrollTop;
+    };
+    window.onmousemove = (e) => {
+        if (!isDrawing) return;
+        const r = canvas.getBoundingClientRect();
+        let cX = e.clientX - r.left + canvas.parentElement.scrollLeft, cY = e.clientY - r.top + canvas.parentElement.scrollTop;
+        document.getElementById('curX').value = Math.max(0, Math.floor(cX > sX ? sX : cX));
+        document.getElementById('curY').value = Math.max(0, Math.floor(cY > sY ? sY : cY));
+        document.getElementById('curW').value = Math.floor(Math.abs(cX - sX));
+        document.getElementById('curH').value = Math.floor(Math.abs(cY - sY));
+        updateActivePos();
+    };
+    window.onmouseup = () => isDrawing = false;
+    renderTemplates();
+</script>
 </body>
 </html>
