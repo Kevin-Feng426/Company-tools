@@ -191,7 +191,7 @@
 
         const pdf = await pdfjsLib.getDocument({data: await d.file.arrayBuffer()}).promise;
         const page = await pdf.getPage(1);
-        const viewport = page.getViewport({scale: 1.5, rotation: d.rotation});
+        const viewport = page.getViewport({scale: 2.0, rotation: d.rotation});
         canvas.width = viewport.width; canvas.height = viewport.height;
         await page.render({canvasContext: ctx, viewport: viewport}).promise;
         drawSelector();
@@ -199,7 +199,7 @@
         if (!d.isManual) triggerQuickOCR();
     }
 
-    // --- 核心 OCR 邏輯 (包含渲染修復) ---
+    // --- 核心 OCR 邏輯 (包含渲染修復) ---修改清晰度 scale: 正常1.5~2.5
     async function processOCRForFile(index) {
         const d = filesData[index];
         if (!d || d.w < 5 || d.h < 5 || d.isManual) return;
@@ -207,7 +207,7 @@
             const worker = await getWorker();
             const pdf = await pdfjsLib.getDocument({data: await d.file.arrayBuffer()}).promise;
             const page = await pdf.getPage(1);
-            const viewport = page.getViewport({scale: 1.5, rotation: d.rotation});
+            const viewport = page.getViewport({scale: 2.0, rotation: d.rotation});
             
             const tCanvas = document.createElement('canvas');
             tCanvas.width = viewport.width; tCanvas.height = viewport.height;
